@@ -7,9 +7,6 @@
 #
 # license: GPLv2
 #
-# a reminder that this will NOT protect against:
-#   -a trojan hiding in your BIOS
-#   -rootkits that mimmick the old files
 
 CHKBOOT_CMD=$(echo "$0" | sed 's/.*\///g')
 
@@ -45,14 +42,14 @@ if [ ! -z "$1" ]; then
         echo -e "Invalid argument: ${1}"
         help
         exit 1
-    fi    
+    fi
 else
     CHANGED="0"
 fi
 
 install -d "$CHKBOOT_DATA"
 
-# delete the previous 
+# delete the previous
 if [[ -s "${CHANGES_ALERT}" ]]; then
     # restore /etc/issue if it's been modified
     if [ ! $(grep -c "CHKBOOT ALERT" /etc/issue) = 0 ]; then
