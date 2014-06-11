@@ -9,6 +9,12 @@ reboots. Since the scripts and the data they generate are stored on the
 encrypted part of the disk, any attempts to modify the boot partition between
 reboots will be detected.
 
+Limitations
+------------
+
+Be aware that chkboot can *not* protect you against:
+* a trojan hiding in your BIOS
+* rootkits that mimmick the old files
 
 Description
 ------------
@@ -21,15 +27,15 @@ had changes made to them is kept, but the short term list meant to alert the
 user is erased the next time `chkboot` is run.
 
 `chkboot-check`: This file can be run by anyone who can view /var/lib/chkboot,
-and will display a warning a the list of changed files if any were detected last
+and will display a warning and the list of changed files if any were detected last
 time chkboot was run.
 
-`chkboot.conf`: Contans settings for your configuration, including which
+`chkboot.conf`: Contains settings for your configuration, including which
 alert types will be used. Alert types are currently on shell login via
 '/etc/profile.d' and in the vterm header by modifying '/etc/issue'
 
 `INITCPIO SUPPORT`: If your system uses initcpio, add 'chkboot' to the end of
-your modules array to have chkboot run automatically when you upgrade linux.
+your modules array to have chkboot run automatically when you upgrade Linux.
 
 `SYSTEMD SUPPORT`: If your system uses systemd, you should enable the chkboot
 service to have your boot partitioned checked every time your system starts.
@@ -55,7 +61,7 @@ make install-initcpio
 make install-systemd
 ```
 
-Manual Installation 
+Manual Installation
 -------------------
 
 ### Everything should be installed as shown below
@@ -74,7 +80,7 @@ Ubuntu), add the following line to `/etc/rc.local`:
 /usr/bin/chkboot &
 ```
 
-### REQUIRES INITCPIO: 
+### REQUIRES INITCPIO:
 
 Add `chkboot` to the end of the 'HOOKS' array in `/etc/mkinitcpio.conf`
 
@@ -88,7 +94,7 @@ Run `systemctl --system daemon-reload` and then `systemctl enable chkboot`
 
 ### OPTIONAL:
 
-`chkboot-bootcheck` can be installed elsewhere and added to the startup sequence 
+`chkboot-bootcheck` can be installed elsewhere and added to the startup sequence
 with another system:
 
 ```
