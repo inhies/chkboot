@@ -18,3 +18,9 @@ if [ ! $(echo "${CHKBOOT_STYLES}" | grep -c "issue") = 0 ]; then
     CHKBOOT_CHECK=$(chkboot-check)
     if [ "$?" = 1 ]; then echo "${CHKBOOT_CHECK}" >> /etc/issue; fi
 fi
+
+# run the alert script, if executable
+if [ -x "${CHKBOOT_ALERT_SCRIPT}" ]; then
+    CHKBOOT_CHECK=$(chkboot-check)
+    if [ "$?" = 1 ]; then "${CHKBOOT_ALERT_SCRIPT}"; fi
+fi
