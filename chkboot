@@ -34,10 +34,12 @@ DISKHEAD="${CHKBOOT_DATA}/DISKHEAD-$CURRTIME"
 DISKHEAD_LAST="${CHKBOOT_DATA}/DISKHEAD-last"
 CHANGES_ALERT="${CHKBOOT_DATA}/${CHANGES_ALERT}"
 CHANGES_LOG="${CHKBOOT_DATA}/${CHANGES_LOG}"
+CHANGED="0"
+UPDATE_ONLY="0"
 
 if [ ! -z "$1" ]; then
     if [ "$1" = "-u" -o "$1" = "--update" ]; then
-        CHANGED="-1"
+        UPDATE_ONLY="1"
     elif [ "$1" = "-h" -o "$1" = "--help" ]; then
         help
         exit 0
@@ -45,9 +47,7 @@ if [ ! -z "$1" ]; then
         echo -e "Invalid argument: ${1}"
         help
         exit 1
-    fi    
-else
-    CHANGED="0"
+    fi
 fi
 
 install -d "$CHKBOOT_DATA"
@@ -82,10 +82,8 @@ pushd "$BOOTDIR" > /dev/null 2>&1
     if [ ! -s "$DISKHEAD_LAST" ]; then ln -s -f $DISKHEAD $DISKHEAD_LAST; fi
     if [ ! -s "$BOOTFILES_LAST" ]; then ln -s -f $BOOTFILES $BOOTFILES_LAST; exit 0; fi
 
-    if [ ! "$CHANGED" = "-1" ]; then
-        ( diff $BOOTFILES_LAST $BOOTFILES >> "${CHANGES_ALERT}-now" ) || CHANGED="1"
-        ( diff $DISKHEAD_LAST $DISKHEAD >> "${CHANGES_ALERT}-now" ) || CHANGED="1"
-    fi
+    ( diff $BOOTFILES_LAST $BOOTFILES >> "${CHANGES_ALERT}-now" ) || CHANGED="1"
+    ( diff $DISKHEAD_LAST $DISKHEAD >> "${CHANGES_ALERT}-now" ) || CHANGED="1"
 
     # changes detected, create the changes alert file
     if [ ! $CHANGED = "1" ] ; then
@@ -99,9 +97,16 @@ pushd "$BOOTDIR" > /dev/null 2>&1
         cat "$CHANGES_ALERT" >> "$CHANGES_LOG"
         echo >> "$CHANGES_LOG"
 
+        if [ $UPDATE_ONLY = "1" ]; then
+            rm -f "${CHANGES_ALERT}-now" "$CHANGES_ALERT"
+        fi
+
         # set the latest hashes to the old ones for next time then exit
         ln -s -f $BOOTFILES $BOOTFILES_LAST
         ln -s -f $DISKHEAD $DISKHEAD_LAST
-        exit 1
+
+        if [ $UPDATE_ONLY = "0" ]; then
+            exit 1
+        fi
     fi
 popd > /dev/null 2>&1
